@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const apiURL = "http://google.ca"
+
 var start time.Time
 
 func main() {
@@ -23,7 +25,6 @@ func main() {
 
 	var (
 		cmd *exec.Cmd
-		// cmdOut []byte
 		err error
 	)
 
@@ -45,14 +46,16 @@ func main() {
 
 	start = time.Now()
 
-	defer stuff()
-
 	if err = cmd.Start(); err != nil {
 		fmt.Fprintln(os.Stderr, "There was an error running git rev-parse command: ", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("starting!")
+	defer timeRan(cmd.Process.Pid)
+
+	ss := StartShell{Pid: cmd.Process.Pid, SendNotification: false, StartDate: start}
+
+	fmt.Println("starting!", ss)
 
 	if err := cmd.Wait(); err != nil {
 		fmt.Println("Waiting")
@@ -74,8 +77,12 @@ func main() {
 
 }
 
-func stuff() {
+func timeRan(pid int) {
 	t := time.Now()
 	elapsed := t.Sub(start)
+
+	es := EndShell{Pid: pid, Elapsed: elapsed, EndDate: t}
+
+	fmt.Println("End Shell:", es)
 	fmt.Println("Time Elapsed:", elapsed)
 }
