@@ -13,6 +13,7 @@ type StartShell struct {
 	StartDate        time.Time
 	Pid              int
 	SendNotification bool
+	Title            string
 }
 
 func (ss *StartShell) send() {
