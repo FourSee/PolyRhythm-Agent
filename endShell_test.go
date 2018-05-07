@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-func Test_StartShell_SendData(t *testing.T) {
+func Test_EndShell_SendData(t *testing.T) {
 	now := time.Now().UTC()
-	ss := StartShell{Pid: 100, SendNotification: false, Title: "Cheese", StartDate: now}
+	es := EndShell{Elapsed: 20, EndDate: now, ExitStatus: 0, Output: "", Pid: 100}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -22,8 +22,8 @@ func Test_StartShell_SendData(t *testing.T) {
 
 		d := json.NewDecoder(r.Body)
 
-		var ssT StartShell
-		err := d.Decode(&ssT)
+		var esT EndShell
+		err := d.Decode(&esT)
 		if err != nil {
 			t.Log("Failed to decode")
 			panic(err)
@@ -31,11 +31,11 @@ func Test_StartShell_SendData(t *testing.T) {
 
 		defer r.Body.Close()
 
-		if ssT != ss {
-			t.Errorf("Expected structs to be equal %v, got ‘%v’", ss, ssT)
+		if esT != es {
+			t.Errorf("Expected structs to be equal %v, got ‘%v’", es, esT)
 		}
 
-		t.Log(ssT)
+		t.Log(esT)
 
 		fmt.Fprintln(w, "Hello, client")
 	}))
@@ -43,5 +43,5 @@ func Test_StartShell_SendData(t *testing.T) {
 
 	apiURL = ts.URL
 
-	ss.send()
+	es.send()
 }
