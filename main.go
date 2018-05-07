@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const apiURL = "http://google.ca"
+var apiURL = "http://google.ca"
 
 var start time.Time
 

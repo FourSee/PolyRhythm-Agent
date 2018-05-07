@@ -10,10 +10,10 @@ import (
 
 // StartShell is struct that gets sent at the beginning of the running the application
 type StartShell struct {
-	StartDate        time.Time
-	Pid              int
-	SendNotification bool
-	Title            string
+	StartDate        time.Time `json:"startDate"`
+	Pid              int       `json:"pid"`
+	SendNotification bool      `json:"sendNotification"`
+	Title            string    `json:"title"`
 }
 
 func (ss *StartShell) send() {
