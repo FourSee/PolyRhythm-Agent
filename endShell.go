@@ -33,3 +33,12 @@ func (es *EndShell) send() {
 	}
 	defer resp.Body.Close()
 }
+
+func (es *EndShell) encodeData() {
+
+}
+
+func (es *EndShell) setElapsed(sd time.Time, ed time.Time) {
+	es.Elapsed = ed.Sub(sd)
+	es.EndDate = ed
+}
