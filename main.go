@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	qrcode "github.com/Baozisoftware/qrcode-terminal-go"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -8,24 +11,25 @@ var apiURL = "http://google.ca"
 var exitStatus = 0
 
 var (
-	debug   = kingpin.Flag("debug", "Enable debug mode.").Bool()
-	timeout = kingpin.Flag("timeout", "Timeout waiting for ping.").Default("5s").OverrideDefaultFromEnvar("PING_TIMEOUT").Short('t').Duration()
-	ip      = kingpin.Arg("ip", "IP address to ping.").Required().IP()
-	count   = kingpin.Arg("count", "Number of packets to send").Int()
+	pair        = kingpin.Command("pair", "Pair your device with ShellGame")
+	run         = kingpin.Command("run", "Run command and recieve notification")
+	command     = run.Arg("Command", "").Required().String()
+	commandArgs = run.Arg("Args", "").Strings()
 )
 
 func main() {
 	kingpin.Version("0.0.1")
-	kingpin.Parse()
 
-	// argsWithProg := os.Args
-	// argsWithoutProg := os.Args[1:]
+	switch kingpin.Parse() {
+	// Register user
+	case pair.FullCommand():
+		qr := qrcode.New()
+		qr.Get("pair").Print()
 
-	// arg := os.Args[1]
-	// fmt.Println(argsWithProg)
-	// fmt.Println(argsWithoutProg)
-	// fmt.Println(arg)
-
-	// cr := commandRunner{command: arg, args: os.Args[2]}
-	// cr.run()
+	// Post message
+	case run.FullCommand():
+		fmt.Printf("%v", *commandArgs)
+		cr := commandRunner{command: *command, args: *commandArgs}
+		cr.run()
+	}
 }

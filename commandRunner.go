@@ -6,13 +6,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 )
 
 type commandRunner struct {
 	command string
-	args    string
+	args    []string
 }
 
 func (cr *commandRunner) run() {
@@ -21,7 +22,9 @@ func (cr *commandRunner) run() {
 		err error
 	)
 
-	cmd = exec.Command(cr.command, cr.args)
+	argList := strings.Join(cr.args, ",")
+
+	cmd = exec.Command(cr.command, argList)
 
 	stdout, err := cmd.StdoutPipe()
 
