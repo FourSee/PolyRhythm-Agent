@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/foursee/shellgame/testapp/cmd"
+import "github.com/Foursee/shellgame/testapp/cmd"
 
 func main() {
 	cmd.Execute()
