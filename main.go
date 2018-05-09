@@ -11,10 +11,11 @@ var apiURL = "http://google.ca"
 var exitStatus = 0
 
 var (
-	pair        = kingpin.Command("pair", "Pair your device with ShellGame")
-	run         = kingpin.Command("run", "Run command and recieve notification")
-	command     = run.Arg("Command", "").Required().String()
-	commandArgs = run.Arg("Args", "").Strings()
+	pair                = kingpin.Command("pair", "Pair your device with ShellGame")
+	run                 = kingpin.Command("run", "Run command and recieve notification")
+	onStartNotification = run.Flag("onStartNotification", "Send a notifcation on start").Bool()
+	command             = run.Arg("Command", "").Required().String()
+	commandArgs         = run.Arg("Args", "").Strings()
 )
 
 func main() {
@@ -28,8 +29,8 @@ func main() {
 
 	// Post message
 	case run.FullCommand():
-		fmt.Printf("%v", *commandArgs)
-		cr := commandRunner{command: *command, args: *commandArgs}
+		fmt.Printf("%v %v", *commandArgs, *onStartNotification)
+		cr := commandRunner{command: *command, args: *commandArgs, startNotification: *onStartNotification}
 		cr.run()
 	}
 }

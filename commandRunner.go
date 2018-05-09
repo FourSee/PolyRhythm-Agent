@@ -12,8 +12,9 @@ import (
 )
 
 type commandRunner struct {
-	command string
-	args    []string
+	command           string
+	args              []string
+	startNotification bool
 }
 
 func (cr *commandRunner) run() {
@@ -26,19 +27,7 @@ func (cr *commandRunner) run() {
 
 	cmd = exec.Command(cr.command, argList)
 
-	stdout, err := cmd.StdoutPipe()
-
-	if err != nil {
-		fmt.Println("stuff")
-	}
-
-	scanner := bufio.NewScanner(stdout)
-
-	go func() {
-		for scanner.Scan() {
-			fmt.Println(scanner.Text())
-		}
-	}()
+	setupPrinter(cmd)
 
 	start := time.Now()
 
@@ -49,7 +38,7 @@ func (cr *commandRunner) run() {
 
 	defer timeRan(cmd.Process.Pid, start)
 
-	ss := StartShell{Pid: cmd.Process.Pid, SendNotification: false, StartDate: start}
+	ss := StartShell{Pid: cmd.Process.Pid, SendNotification: cr.startNotification, StartDate: start}
 
 	fmt.Println("starting!", ss)
 
@@ -70,6 +59,22 @@ func (cr *commandRunner) run() {
 			log.Fatalf("cmd.Wait: %v", err)
 		}
 	}
+}
+
+func setupPrinter(cmd *exec.Cmd) {
+	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		log.Fatalln("Unable to get output from program")
+	}
+
+	scanner := bufio.NewScanner(stdout)
+
+	go func() {
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+	}()
 }
 
 func timeRan(pid int, st time.Time) {
