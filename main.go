@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	qrcode "github.com/Baozisoftware/qrcode-terminal-go"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -24,8 +23,8 @@ func main() {
 	switch kingpin.Parse() {
 	// Register user
 	case pair.FullCommand():
-		qr := qrcode.New()
-		qr.Get("pair").Print()
+		code := getPairingURL()
+		code.show()
 
 	// Post message
 	case run.FullCommand():
