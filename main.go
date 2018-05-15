@@ -6,7 +6,6 @@ import (
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-var apiURL = "http://google.ca"
 var exitStatus = 0
 
 var (
@@ -22,9 +21,12 @@ func main() {
 
 	switch kingpin.Parse() {
 	// Register user
+	// case qr.FullCommand():
+	// 	content := "http://localhost:3000/v1/pr/4nnT2ItM5QSDn2Ziu78jit"
+	// 	obj := qrcode.New2(qrcode.ConsoleColors.NormalBlack, qrcode.ConsoleColors.BrightWhite, qrcode.QRCodeRecoveryLevels.Low)
+	// 	obj.Get([]byte(content)).Print()
 	case pair.FullCommand():
-		code := getPairingURL()
-		code.show()
+		newPairingRequest()
 
 	// Post message
 	case run.FullCommand():
