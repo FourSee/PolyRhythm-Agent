@@ -36,6 +36,12 @@ func writeConfig(c Config) (err error) {
 	return
 }
 
+func (c *Config) save() (err error) {
+	d, err := yaml.Marshal(c)
+	err = ioutil.WriteFile(configFilename(), d, 0600)
+	return
+}
+
 func configFilename() string {
 	return filepath.Join(configDir(), "config.yaml")
 }

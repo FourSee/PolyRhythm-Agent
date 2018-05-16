@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/user"
@@ -31,5 +32,42 @@ func newPairingRequest() {
 	}
 	obj := qrcode.New2(qrcode.ConsoleColors.NormalBlack, qrcode.ConsoleColors.BrightWhite, qrcode.QRCodeRecoveryLevels.Low)
 	obj.Get([]byte(result.Payload.ShowURL)).Print()
+	pairedDeviceKey, err := waitForAcceptance(result.Payload.ID)
+	check(err)
+	config.PairedDevice.PublicKey = pairedDeviceKey
+	config.save()
+	return
+}
+
+func waitForAcceptance(requestID string) (pubKey string, err error) {
+	fmt.Println("Scan this QR code with the PolyRhythm app on your phone")
+	fmt.Println("Waiting for pairing confirmation...")
+	params := pairing_request.NewGetPairingRequestParams()
+	params.SetID(requestID)
+	params.SetTimeout(10 * time.Second)
+	startedAt := time.Now()
+	for {
+		timeDiff := time.Now().Sub(startedAt)
+		if timeDiff > 60*time.Second {
+			return "", errors.New("Timed out waiting for pairing acceptance")
+		}
+		accepted, pubKey, _ := getAcceptance(params)
+		if accepted {
+			config.PairedDevice.PublicKey = pubKey
+			return pubKey, nil
+		}
+		time.Sleep(10 * time.Second)
+	}
+}
+
+func getAcceptance(params *pairing_request.GetPairingRequestParams) (accepted bool, pubKey string, err error) {
+	prs, err := apiclient.Default.PairingRequest.GetPairingRequest(params)
+	if err != nil {
+		return
+	}
+	if prs.Payload.Status == "accepted" {
+		accepted = true
+		pubKey = prs.Payload.AcceptedCryptoKey
+	}
 	return
 }
