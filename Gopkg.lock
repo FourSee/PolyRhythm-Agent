@@ -8,12 +8,6 @@
   revision = "c0650d8dff0f053901ff16185217b950d5e7743c"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/FourSee/ShellGame"
-  packages = ["testapp/cmd"]
-  revision = "c041e33659e2d74ffc8581fb66b3ad49d2b46cc6"
-
-[[projects]]
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
   revision = "0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4"

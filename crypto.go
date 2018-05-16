@@ -10,15 +10,26 @@ import (
 )
 
 func myCryptoKey() (privKey, pubKey string, err error) {
-	return generateCryptoKey()
+	if config.DeviceIdentity.PublicKey == "" && config.DeviceIdentity.PrivateKey == "" {
+		return generateCryptoKey()
+	}
+	return config.DeviceIdentity.PrivateKey, config.DeviceIdentity.PublicKey, nil
 }
 
 func generateCryptoKey() (string, string, error) {
-	log.Output(0, "Generating 2048-bit RSA keypair...")
+	log.Output(0, fmt.Sprintf("Generating %v-bit RSA keypair...", *keyBits))
 	user, _ := user.Current()
 	name := user.Username
 	comment := "PolyRythm generated keypair"
 	hostname, _ := os.Hostname()
 	email := fmt.Sprintf("%s@%s", name, hostname)
-	return crypto.GenerateRSAKeyPair(2048, name, comment, email)
+	privKey, pubKey, err := crypto.GenerateRSAKeyPair(*keyBits, name, comment, email)
+	check(err)
+	c := new(Config)
+	c.DeviceIdentity.PrivateKey = privKey
+	c.DeviceIdentity.PublicKey = pubKey
+	err = writeConfig(*c)
+	check(err)
+	return privKey, pubKey, err
+
 }
