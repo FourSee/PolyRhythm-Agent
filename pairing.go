@@ -34,8 +34,8 @@ func newPairingRequest() {
 	obj.Get([]byte(result.Payload.ShowURL)).Print()
 	pairedDeviceKey, err := waitForAcceptance(result.Payload.ID)
 	check(err)
-	config.PairedDevice.PublicKey = pairedDeviceKey
-	config.save()
+	configInstance.PairedDevice.PublicKey = pairedDeviceKey
+	check(configInstance.save())
 	return
 }
 
@@ -48,12 +48,11 @@ func waitForAcceptance(requestID string) (pubKey string, err error) {
 	startedAt := time.Now()
 	for {
 		timeDiff := time.Now().Sub(startedAt)
-		if timeDiff > 60*time.Second {
+		if timeDiff > 6000*time.Second {
 			return "", errors.New("Timed out waiting for pairing acceptance")
 		}
 		accepted, pubKey, _ := getAcceptance(params)
 		if accepted {
-			config.PairedDevice.PublicKey = pubKey
 			return pubKey, nil
 		}
 		time.Sleep(10 * time.Second)
@@ -65,6 +64,7 @@ func getAcceptance(params *pairing_request.GetPairingRequestParams) (accepted bo
 	if err != nil {
 		return
 	}
+	fmt.Println(prs.Payload.Status)
 	if prs.Payload.Status == "accepted" {
 		accepted = true
 		pubKey = prs.Payload.AcceptedCryptoKey

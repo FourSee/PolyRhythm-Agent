@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -8,6 +9,8 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
 )
+
+var configInstance = new(Config)
 
 type Config struct {
 	PairedDevice struct {
@@ -19,26 +22,22 @@ type Config struct {
 	}
 }
 
-func getConfig() (c Config) {
-	c, _ = readConfig()
-	return c
+func config() *Config {
+	return configInstance
 }
 
-func readConfig() (c Config, err error) {
+func readConfig() (c *Config, err error) {
 	data, err := ioutil.ReadFile(configFilename())
 	err = yaml.Unmarshal([]byte(data), &c)
 	return
 }
 
-func writeConfig(c Config) (err error) {
-	d, err := yaml.Marshal(&c)
-	err = ioutil.WriteFile(configFilename(), d, 0600)
-	return
-}
-
 func (c *Config) save() (err error) {
+	fmt.Printf("%v\n", c)
 	d, err := yaml.Marshal(c)
+	fmt.Printf("%v\n", c)
 	err = ioutil.WriteFile(configFilename(), d, 0600)
+	check(err)
 	return
 }
 

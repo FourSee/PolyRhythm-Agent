@@ -10,10 +10,10 @@ import (
 )
 
 func myCryptoKey() (privKey, pubKey string, err error) {
-	if config.DeviceIdentity.PublicKey == "" && config.DeviceIdentity.PrivateKey == "" {
+	if configInstance.DeviceIdentity.PublicKey == "" && configInstance.DeviceIdentity.PrivateKey == "" {
 		return generateCryptoKey()
 	}
-	return config.DeviceIdentity.PrivateKey, config.DeviceIdentity.PublicKey, nil
+	return configInstance.DeviceIdentity.PrivateKey, configInstance.DeviceIdentity.PublicKey, nil
 }
 
 func generateCryptoKey() (string, string, error) {
@@ -25,11 +25,9 @@ func generateCryptoKey() (string, string, error) {
 	email := fmt.Sprintf("%s@%s", name, hostname)
 	privKey, pubKey, err := crypto.GenerateRSAKeyPair(*keyBits, name, comment, email)
 	check(err)
-	c := new(Config)
-	c.DeviceIdentity.PrivateKey = privKey
-	c.DeviceIdentity.PublicKey = pubKey
-	err = writeConfig(*c)
-	check(err)
+	configInstance.DeviceIdentity.PrivateKey = privKey
+	configInstance.DeviceIdentity.PublicKey = pubKey
+	configInstance.save()
 	return privKey, pubKey, err
 
 }

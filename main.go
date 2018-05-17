@@ -16,10 +16,10 @@ var (
 	onStartNotification = run.Flag("onStartNotification", "Send a notifcation on start").Bool()
 	command             = run.Arg("Command", "").Required().String()
 	commandArgs         = run.Arg("Args", "").Strings()
-	config              = getConfig()
 )
 
 func main() {
+	configInstance, _ = readConfig()
 	kingpin.Version("0.0.1")
 
 	switch kingpin.Parse() {
