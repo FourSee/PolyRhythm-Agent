@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/FourSee/ShellGame"
   packages = ["testapp/cmd"]
-  revision = "c041e33659e2d74ffc8581fb66b3ad49d2b46cc6"
+  revision = "016cce3f55b4f8bb083533f3aef789d221418f2b"
 
 [[projects]]
   name = "github.com/PuerkitoBio/purell"

@@ -28,7 +28,11 @@ func config() *Config {
 
 func readConfig() (c *Config, err error) {
 	data, err := ioutil.ReadFile(configFilename())
-	err = yaml.Unmarshal([]byte(data), &c)
+	if err != nil {
+		c = new(Config)
+	} else {
+		err = yaml.Unmarshal([]byte(data), &c)
+	}
 	return
 }
 

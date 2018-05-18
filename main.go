@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
@@ -23,11 +22,6 @@ func main() {
 	kingpin.Version("0.0.1")
 
 	switch kingpin.Parse() {
-	// Register user
-	// case qr.FullCommand():
-	// 	content := "http://localhost:3000/v1/pr/4nnT2ItM5QSDn2Ziu78jit"
-	// 	obj := qrcode.New2(qrcode.ConsoleColors.NormalBlack, qrcode.ConsoleColors.BrightWhite, qrcode.QRCodeRecoveryLevels.Low)
-	// 	obj.Get([]byte(content)).Print()
 	case pair.FullCommand():
 		if in_array(*keyBits, []int{2048, 4096}) {
 			newPairingRequest()
@@ -41,22 +35,4 @@ func main() {
 		cr := commandRunner{command: *command, args: *commandArgs, startNotification: *onStartNotification}
 		cr.run()
 	}
-}
-
-func in_array(val interface{}, array interface{}) (exists bool) {
-	exists = false
-
-	switch reflect.TypeOf(array).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(array)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
-				exists = true
-				return
-			}
-		}
-	}
-
-	return
 }

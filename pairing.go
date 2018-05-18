@@ -55,7 +55,7 @@ func waitForAcceptance(requestID string) (pubKey string, err error) {
 		if accepted {
 			return pubKey, nil
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 }
 
