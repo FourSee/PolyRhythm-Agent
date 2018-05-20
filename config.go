@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -10,7 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var configInstance = new(Config)
+var configInstance = readConfig()
 
 type Config struct {
 	PairedDevice struct {
@@ -26,20 +25,18 @@ func config() *Config {
 	return configInstance
 }
 
-func readConfig() (c *Config, err error) {
+func readConfig() (c *Config) {
+	c = new(Config)
 	data, err := ioutil.ReadFile(configFilename())
-	if err != nil {
-		c = new(Config)
-	} else {
+	if err == nil {
 		err = yaml.Unmarshal([]byte(data), &c)
+		check(err)
 	}
 	return
 }
 
 func (c *Config) save() (err error) {
-	fmt.Printf("%v\n", c)
 	d, err := yaml.Marshal(c)
-	fmt.Printf("%v\n", c)
 	err = ioutil.WriteFile(configFilename(), d, 0600)
 	check(err)
 	return
@@ -50,6 +47,10 @@ func configFilename() string {
 }
 
 func configDir() string {
+	configEnv, p := os.LookupEnv("POLYRHYTHM_CONFIG_DIR")
+	if p {
+		return configEnv
+	}
 	home, _ := homedir.Dir()
 	path := filepath.Join(home, ".polyrhytm")
 	err := os.MkdirAll(path, os.ModePerm)
