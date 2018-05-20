@@ -14,6 +14,7 @@ var (
 	pair                = kingpin.Command("pair", "Pair your device with ShellGame")
 	keyBits             = pair.Flag("bitsize", "The RSA key size to generate for the pairing request. Can be either 2048 or 4096. Defaults to 2048").Short('b').Default("2048").Int()
 	run                 = kingpin.Command("run", "Run command and recieve notification")
+	pipeIn              = kingpin.Command("--", "Read from stdin").Default()
 	onStartNotification = run.Flag("onStartNotification", "Send a notifcation on start").Bool()
 	command             = run.Arg("Command", "").Required().String()
 	commandArgs         = run.Arg("Args", "").Strings()
@@ -45,7 +46,10 @@ func main() {
 		fmt.Printf("%v %v", *commandArgs, *onStartNotification)
 		cr := commandRunner{command: *command, args: *commandArgs, startNotification: *onStartNotification}
 		cr.run()
+	case pipeIn.FullCommand():
+		readFromPipe()
 	}
+
 }
 
 func initialize() {

@@ -1,12 +1,16 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/user"
+	"strings"
 
 	crypto "github.com/foursee/shellgameCrypto"
+	"golang.org/x/crypto/openpgp"
 )
 
 func myCryptoKey() (privKey, pubKey string, err error) {
@@ -29,4 +33,12 @@ func generateCryptoKey() (string, string, error) {
 	config().DeviceIdentity.PublicKey = pubKey
 	config().save()
 	return privKey, pubKey, err
+}
+
+func base64reader(s string) io.Reader {
+	return base64.NewDecoder(base64.StdEncoding, strings.NewReader(s))
+}
+
+func base64keyRing(s string) (openpgp.EntityList, error) {
+	return openpgp.ReadKeyRing(base64reader(s))
 }
