@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	apiclient "github.com/foursee/swagger-go/client"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -12,7 +13,8 @@ var exitStatus = 0
 
 var (
 	pair                = kingpin.Command("pair", "Pair your device with ShellGame")
-	keyBits             = pair.Flag("bitsize", "The RSA key size to generate for the pairing request. Can be either 2048 or 4096. Defaults to 2048").Short('b').Default("2048").Int()
+	quiet               = kingpin.Flag("quiet", "Silences stdout").Short('q').Default("false").Bool()
+	keySizeString       = pair.Flag("bitsize", "The RSA key size to generate for the pairing request. Can be either 2048 or 4096. Defaults to 2048").Short('b').Default("2048").Enum("2048", "4096")
 	run                 = kingpin.Command("run", "Run command and recieve notification")
 	pipeIn              = kingpin.Command("--", "Read from stdin").Default()
 	onStartNotification = run.Flag("onStartNotification", "Send a notifcation on start").Bool()
@@ -27,29 +29,28 @@ func main() {
 
 	switch kingpin.Parse() {
 	case pair.FullCommand():
-
-		// if config().PairedDevice.PublicKey != "" {
-		// 	fmt.Print("Remove existing pairing and create a new one? (Anything other than 'YES' will abort) ")
-		// 	if !askForConfirmation() {
-		// 		fmt.Println("Aborting")
-		// 		return
-		// 	}
-		// }
-		if in_array(*keyBits, []int{2048, 4096}) {
-			newPairingRequest()
-		} else {
-			fmt.Printf("%v is not a permitted keybit size. Permitted sizes are 2048 and 4096\n", *keyBits)
+		if config().PairedDevice.PublicKey != "" {
+			fmt.Print("Remove existing pairing and create a new one? (Anything other than 'YES' will abort) ")
+			if !askForConfirmation() {
+				fmt.Println("Aborting")
+				return
+			}
 		}
-
-	// Post message
+		newPairingRequest()
 	case run.FullCommand():
 		fmt.Printf("%v %v", *commandArgs, *onStartNotification)
 		cr := commandRunner{command: *command, args: *commandArgs, startNotification: *onStartNotification}
 		cr.run()
 	case pipeIn.FullCommand():
-		readFromPipe()
+		fmt.Println(os.Getenv("PIPESTATUS"))
+		readFromPipe(*quiet)
 	}
 
+}
+
+func keyBits() (i int) {
+	i, _ = strconv.Atoi(*keySizeString)
+	return
 }
 
 func initialize() {

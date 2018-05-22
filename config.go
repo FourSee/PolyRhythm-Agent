@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -60,6 +61,7 @@ func configDir() string {
 
 func check(e error) {
 	if e != nil {
-		panic(e)
+		fmt.Printf("PolyRhythm had a fatal error: %v\n", e)
+		os.Exit(0)
 	}
 }

@@ -23,6 +23,7 @@ func send(r io.Reader, e int64, t string) (err error) {
 	msgParams.SetMessageinput(&models.MessageInput{&models.MessageInputMessage{Content: &data, Signature: &sig, ExitCode: e, Title: t}})
 	msgParams.SetTimeout(10 * time.Second)
 	_, err = polyrhythmAPI.Message.SendMessage(msgParams)
+	check(err)
 	// fmt.Printf("Data: %v\nSig: %v", data, sig)
 	return
 }

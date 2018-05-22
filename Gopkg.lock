@@ -53,6 +53,12 @@
   version = "v9"
 
 [[projects]]
+  name = "github.com/djherbis/stream"
+  packages = ["."]
+  revision = "26b9a1fb834dbe1e5782c5c87f119338d0de7af3"
+  version = "v1.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/foursee/shellgameCrypto"
   packages = ["."]
@@ -338,6 +344,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8ab56834dccedb7693b428a5e53163d7f1c1aeec2895ce007e3c6b777014847d"
+  inputs-digest = "b48a60cd229752b4baa7987039485e1cd91ce83b7e8ad724aed224208f31c1fd"
   solver-name = "gps-cdcl"
   solver-version = 1
