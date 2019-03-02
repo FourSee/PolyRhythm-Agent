@@ -1,0 +1,7 @@
+PairedDevice:
+  PublicKey: A dummy pubkey
+  ID: ""
+DeviceIdentity:
+  PublicKey: ""
+  PrivateKey: ""
+  ID: ""

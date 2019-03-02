@@ -6,20 +6,27 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
+	"github.com/spf13/viper"
 )
 
 var configInstance = readConfig()
 
+// Config is the global configuration structure
 type Config struct {
 	PairedDevice struct {
-		PublicKey string
-	}
+		PublicKey string `yaml:"PublicKey"`
+		ID        string `yaml:"ID"`
+	} `yaml:"PairedDevice"`
 	DeviceIdentity struct {
-		PublicKey  string
-		PrivateKey string
-	}
+		PublicKey  string `yaml:"PublicKey"`
+		PrivateKey string `yaml:"PrivateKey"`
+		ID         string `yaml:"ID"`
+	} `yaml:"DeviceIdentity"`
 }
 
 func config() *Config {
@@ -27,36 +34,52 @@ func config() *Config {
 }
 
 func readConfig() (c *Config) {
-	c = new(Config)
-	data, err := ioutil.ReadFile(configFilename())
-	if err == nil {
-		err = yaml.Unmarshal([]byte(data), &c)
-		check(err)
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
+	fmt.Println("Looking for config.yaml in...")
+	viper.AddConfigPath("/etc/polyrhytm/") // path to look for the config file in
+	fmt.Println("/etc/polyrhytm/")
+	viper.AddConfigPath(homeConfigDir()) // call multiple times to add many search paths
+	fmt.Println(homeConfigDir())
+	viper.AddConfigPath(workingPath()) // optionally look for config in the working directory
+	fmt.Println(workingPath())
+	err := viper.ReadInConfig() // Find and read the config file
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		mapstructure.Decode(viper.AllSettings(), c)
+	})
+	if err != nil {
+		fmt.Println("No valid config files found. If you're pairing a device, ignore this")
+		c = new(Config)
+	} else {
+		err = mapstructure.Decode(viper.AllSettings(), &c)
+		if err != nil {
+			fmt.Printf("Can't read %s: %s\n", viper.ConfigFileUsed(), err)
+		}
 	}
 	return
 }
 
-func (c *Config) save() (err error) {
+func (c *Config) save() {
 	d, err := yaml.Marshal(c)
-	err = ioutil.WriteFile(configFilename(), d, 0600)
+	configFile := viper.ConfigFileUsed()
+	if configFile == "" {
+		configFile, _ = filepath.Abs("./config.yaml")
+	}
+	fmt.Printf("Writing to %s\n", configFile)
+	err = ioutil.WriteFile(configFile, d, 0600)
 	check(err)
+}
+
+func homeConfigDir() (d string) {
+	d, _ = homedir.Expand("~/.polyrhythm/")
 	return
 }
 
-func configFilename() string {
-	return filepath.Join(configDir(), "config.yaml")
-}
-
-func configDir() string {
-	configEnv, p := os.LookupEnv("POLYRHYTHM_CONFIG_DIR")
-	if p {
-		return configEnv
-	}
-	home, _ := homedir.Dir()
-	path := filepath.Join(home, ".polyrhytm")
-	err := os.MkdirAll(path, os.ModePerm)
-	check(err)
-	return path
+func workingPath() (d string) {
+	d, _ = filepath.Abs("./")
+	return
 }
 
 func check(e error) {
