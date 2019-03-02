@@ -17,3 +17,4 @@ PolyRhythm-Agent
 vendor/**/*
 .vscode/*
 debug
+config.yaml
