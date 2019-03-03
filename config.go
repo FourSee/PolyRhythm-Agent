@@ -47,7 +47,8 @@ func readConfig() (c *Config) {
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		mapstructure.Decode(viper.AllSettings(), c)
+		err := mapstructure.Decode(viper.AllSettings(), c)
+		check(err)
 	})
 	if err != nil {
 		fmt.Println("No valid config files found. If you're pairing a device, ignore this")
@@ -63,6 +64,7 @@ func readConfig() (c *Config) {
 
 func (c *Config) save() {
 	d, err := yaml.Marshal(c)
+	check(err)
 	configFile := viper.ConfigFileUsed()
 	if configFile == "" {
 		configFile, _ = filepath.Abs("./config.yaml")

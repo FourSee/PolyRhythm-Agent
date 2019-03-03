@@ -41,12 +41,6 @@
   revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/alokmenghrajani/gpgeez"
-  packages = ["."]
-  revision = "1a06f1c582f9199d70894e080f6e829aa2082d1d"
-
-[[projects]]
   name = "github.com/asaskevich/govalidator"
   packages = ["."]
   revision = "ccb8e960c48f04d6935e72476ae4a51028f9e22f"
@@ -57,12 +51,6 @@
   packages = ["."]
   revision = "26b9a1fb834dbe1e5782c5c87f119338d0de7af3"
   version = "v1.2.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/foursee/shellgameCrypto"
-  packages = ["."]
-  revision = "1cdf8632af820f934227dd5f3f2c7a8c6f00c436"
 
 [[projects]]
   branch = "master"
@@ -272,16 +260,9 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
-    "cast5",
     "curve25519",
     "nacl/box",
     "nacl/secretbox",
-    "openpgp",
-    "openpgp/armor",
-    "openpgp/elgamal",
-    "openpgp/errors",
-    "openpgp/packet",
-    "openpgp/s2k",
     "poly1305",
     "salsa20/salsa"
   ]
@@ -349,6 +330,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "441fd5e3907b3f280e562ac70725ebc10294c1225a2a2b0acfd60f4f99ccf158"
+  inputs-digest = "0d6ea681277e2924e0e0deeb9c06c7f08f80487222fb0cc181ecd0c85b7aadce"
   solver-name = "gps-cdcl"
   solver-version = 1
