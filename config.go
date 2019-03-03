@@ -36,13 +36,13 @@ func config() *Config {
 func readConfig() (c *Config) {
 	viper.SetConfigType("yaml")
 	viper.SetConfigName("config")
-	fmt.Println("Looking for config.yaml in...")
+	// fmt.Println("Looking for config.yaml in...")
 	viper.AddConfigPath("/etc/polyrhytm/") // path to look for the config file in
-	fmt.Println("/etc/polyrhytm/")
+	// fmt.Println("/etc/polyrhytm/")
 	viper.AddConfigPath(homeConfigDir()) // call multiple times to add many search paths
-	fmt.Println(homeConfigDir())
+	// fmt.Println(homeConfigDir())
 	viper.AddConfigPath(workingPath()) // optionally look for config in the working directory
-	fmt.Println(workingPath())
+	// fmt.Println(workingPath())
 	err := viper.ReadInConfig() // Find and read the config file
 
 	viper.WatchConfig()

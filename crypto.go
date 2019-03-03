@@ -1,11 +1,12 @@
 package main
 
 import (
-	"encoding/base64"
+	"bytes"
+	crypto_rand "crypto/rand"
+	b64 "encoding/base64"
 	"io"
-	"strings"
 
-	"golang.org/x/crypto/openpgp"
+	"golang.org/x/crypto/nacl/box"
 )
 
 func myCryptoKey() (privKey, pubKey string, err error) {
@@ -15,8 +16,15 @@ func myCryptoKey() (privKey, pubKey string, err error) {
 	return config().DeviceIdentity.PrivateKey, config().DeviceIdentity.PublicKey, nil
 }
 
-func generateCryptoKey() (string, string, error) {
-	// log.Output(0, fmt.Sprintf("Generating %v-bit RSA keypair...", keyBits()))
+func generateCryptoKey() (pub string, priv string, err error) {
+	// log.Output(0, "Generating ECDSA keypair...")
+	pubKey, privKey, err := box.GenerateKey(crypto_rand.Reader)
+	if err != nil {
+		return
+	}
+	pub = b64.StdEncoding.EncodeToString(pubKey[:])
+	priv = b64.StdEncoding.EncodeToString(privKey[:])
+
 	// user, _ := user.Current()
 	// name := user.Username
 	// comment := "PolyRythm generated keypair"
@@ -24,16 +32,45 @@ func generateCryptoKey() (string, string, error) {
 	// email := fmt.Sprintf("%s@%s", name, hostname)
 	// privKey, pubKey, err := crypto.GenerateRSAKeyPair(keyBits(), name, comment, email)
 	// check(err)
-	// config().DeviceIdentity.PrivateKey = privKey
-	// config().DeviceIdentity.PublicKey = pubKey
+	// config().DeviceIdentity.PrivateKey = priv
+	// config().DeviceIdentity.PublicKey = pub
 	// config().save()
-	return "", "", nil
+	return
 }
 
-func base64reader(s string) io.Reader {
-	return base64.NewDecoder(base64.StdEncoding, strings.NewReader(s))
+func nonce() (n [24]byte) {
+	if _, err := io.ReadFull(crypto_rand.Reader, n[:]); err != nil {
+		panic(err)
+	}
+	return
 }
 
-func base64keyRing(s string) (openpgp.EntityList, error) {
-	return openpgp.ReadKeyRing(base64reader(s))
+// EncryptReader encrypts a byte array to a base64-encoded nacl box
+func EncryptReader(r io.Reader, pub, sec *[32]byte) (encrypted *string) {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r)
+	return EncryptBytes(buf.Bytes(), pub, sec)
+}
+
+// EncryptString encrypts a byte array to a base64-encoded nacl box
+func EncryptString(msg string, pub, sec *[32]byte) (encrypted *string) {
+	return EncryptBytes([]byte(msg), pub, sec)
+}
+
+// EncryptBytes encrypts a byte array to a base64-encoded nacl box
+func EncryptBytes(msg []byte, pub, sec *[32]byte) (encrypted *string) {
+	n := nonce()
+	// alicePub := keyBytes(config().PairedDevice.PublicKey)
+	// bobSec := keyBytes(config().DeviceIdentity.PrivateKey)
+	encryptedBytes := box.Seal(n[:], msg, &n, pub, sec)
+	s := b64.StdEncoding.EncodeToString(encryptedBytes)
+	return &s
+}
+
+// KeyToBytes converts a string to byte arrays suitable for NaCL use
+func KeyToBytes(s string) (b [32]byte) {
+	slice, err := b64.StdEncoding.DecodeString(s)
+	check(err)
+	copy(b[:], slice)
+	return
 }

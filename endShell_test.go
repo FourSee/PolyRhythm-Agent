@@ -41,7 +41,5 @@ func Test_EndShell_SendData(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	apiURL = ts.URL
-
 	es.send()
 }

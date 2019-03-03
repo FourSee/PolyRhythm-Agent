@@ -28,7 +28,11 @@ func readFromPipe(silent bool) {
 		go io.Copy(os.Stdout, stdOut)
 	}
 
-	send(enc, 0, "")
+	publicBytes := KeyToBytes(config().PairedDevice.PublicKey)
+	privateBytes := KeyToBytes(config().DeviceIdentity.PrivateKey)
+
+	EncryptReader(enc, &publicBytes, &privateBytes)
+	// send(enc, 0, "")
 }
 
 func duplicateReader(r io.Reader) (r1, r2 io.Reader) {
