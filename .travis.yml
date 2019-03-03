@@ -1,4 +1,13 @@
 language: go
 
 go:
-  - "1.10.x"
+  - "1.12.x"
+
+git:
+  depth: 1
+notifications:
+  email: false
+
+script:
+  - golangci-lint run       # run a bunch of code checkers/linters in parallel
+  - go test -v -race ./...  # Run all the tests with the race detector enabled
