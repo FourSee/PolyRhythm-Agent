@@ -2,16 +2,13 @@ package main
 
 import (
 	b64 "encoding/base64"
-	"fmt"
 	"testing"
 
 	"golang.org/x/crypto/nacl/box"
 )
 
 func TestGenerateCryptoKey(t *testing.T) {
-	pubKey, privKey, err := generateCryptoKey()
-	fmt.Printf("Public key: %s\n", pubKey)
-	fmt.Printf("Private key: %s\n", privKey)
+	_, _, err := generateCryptoKey()
 	if err != nil {
 		t.Errorf("Got an error generating keys: %s\n", err)
 	}
@@ -22,7 +19,6 @@ func BenchmarkGenerateCryptoKey(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, _, err := generateCryptoKey()
 		if err != nil {
-			fmt.Printf("Error generating key: %s\n", err)
 			panic(err)
 		}
 	}
@@ -45,7 +41,6 @@ func TestEncryptString(t *testing.T) {
 	bobPrivBytes := KeyToBytes(bobPrivKey)
 
 	encryptedMsg := EncryptString(msg, &alicePubBytes, &bobPrivBytes)
-	fmt.Printf("Encrypted message: %s\n", *encryptedMsg)
 
 	encrypted, err := b64.StdEncoding.DecodeString(*encryptedMsg)
 	if err != nil {
