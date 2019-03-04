@@ -8,7 +8,7 @@
 # fi
 # package_split=(${package//\// })
 # package_name=${package_split[-1]}
-package_name='PolyRhythm-Agent'
+package_name='polyrhythm'
 
 platforms=($(echo "$PLATFORMS" | tr ',' '\n'))
 # platforms=("windows/amd64" "windows/386" "darwin/amd64")

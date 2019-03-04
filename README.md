@@ -7,7 +7,7 @@ To cross-platform compile:
  $ PLATFORMS=windows/amd64,darwin/amd64,linux/amd64 ./build.sh
 ```
 
-The build platform targets are taken from the `PLATFORMS` env var. It is expected to be a comma-separated list
+The build platform targets are taken from the `PLATFORMS` env var. It is expected to be a comma-separated list. Binaries will be saved in `./build/`
 
 
 | OS |  CPU arch |
