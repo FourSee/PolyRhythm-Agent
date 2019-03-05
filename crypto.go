@@ -15,7 +15,6 @@ func myCryptoKey() (privKey, pubKey string, err error) {
 		config().DeviceIdentity.PrivateKey, config().DeviceIdentity.PublicKey, err = generateCryptoKey()
 		check(err)
 		config().save()
-		return config().DeviceIdentity.PrivateKey, config().DeviceIdentity.PublicKey, nil
 	}
 	return config().DeviceIdentity.PrivateKey, config().DeviceIdentity.PublicKey, nil
 }
@@ -49,7 +48,8 @@ func nonce() (n [24]byte) {
 // EncryptReader encrypts a byte array to a base64-encoded nacl box
 func EncryptReader(r io.Reader, pub, sec *[32]byte) (encrypted *string) {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(r)
+	_, err := buf.ReadFrom(r)
+	check(err)
 	return EncryptBytes(buf.Bytes(), pub, sec)
 }
 
