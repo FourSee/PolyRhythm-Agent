@@ -1,29 +1,37 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
 	"os/user"
 	"time"
 
+	// "github.com/foursee/swagger-go/client/pairing_request"
 	qrcode "github.com/Baozisoftware/qrcode-terminal-go"
-	"github.com/foursee/swagger-go/client/pairing_request"
-
-	models "github.com/foursee/swagger-go/models"
+	openapiGo "github.com/foursee/openapiGo"
 )
 
 func newPairingRequest() {
-	_, pubKey, _ := myCryptoKey()
-	user, _ := user.Current()
-	name := user.Username
-	hostname, _ := os.Hostname()
-	deviceName := fmt.Sprintf("%s@%s", name, hostname)
-	priParams := pairing_request.NewCreatePairingRequestParams()
-	deviceType := "non_push"
-	deviceInfo := models.PairingRequestInputPairingRequestDeviceInfo{DeviceType: &deviceType}
-	priParams.SetPairingrequestinput(&models.PairingRequestInput{&models.PairingRequestInputPairingRequest{PublicKey: pubKey, DeviceName: deviceName, DeviceInfo: &deviceInfo}})
-	priParams.SetTimeout(10 * time.Second)
+	cpr := new(openapiGo.PairingRequestCreate)
+	cpr.DeviceName = deviceName()
+	cpr.Platform = "non_push"
+	_, pubKey, err := myCryptoKey()
+	check(err)
+	cpr.PublicKey = pubKey
+	pr, resp, err := polyrhythmAPI.PairingRequestsApi.CreatePairingRequest(context.Background(), *cpr)
+	check(err)
+	thing := resp.Header["Stuff"]
+	fmt.Println(thing)
+	fmt.Println(pr.ShortId)
+	// _, pubKey, _ := myCryptoKey()
+	// deviceName := fmt.Sprintf("%s@%s", name, hostname)
+	// priParams := pairing_request.NewCreatePairingRequestParams()
+	// deviceType := "non_push"
+	// deviceInfo := models.PairingRequestInputPairingRequestDeviceInfo{DeviceType: &deviceType}
+	// priParams.SetPairingrequestinput(&models.PairingRequestInput{&models.PairingRequestInputPairingRequest{PublicKey: pubKey, DeviceName: deviceName, DeviceInfo: &deviceInfo}})
+	// priParams.SetTimeout(10 * time.Second)
 	// result, err := polyrhythmAPI.PairingRequest.CreatePairingRequest(priParams)
 	// if err != nil {
 	// fmt.Println(err)
@@ -34,6 +42,12 @@ func newPairingRequest() {
 	check(err)
 	config().PairedDevice.PublicKey = pairedDeviceKey
 	config().save()
+}
+
+func deviceName() string {
+	u, _ := user.Current()
+	h, _ := os.Hostname()
+	return fmt.Sprintf("%s@%s", u.Username, h)
 }
 
 func waitForAcceptance(requestID string) (pubKey string, err error) {
@@ -56,14 +70,14 @@ func waitForAcceptance(requestID string) (pubKey string, err error) {
 	}
 }
 
-func getAcceptance(params *pairing_request.GetPairingRequestParams) (accepted bool, pubKey string, err error) {
-	prs, err := polyrhythmAPI.PairingRequest.GetPairingRequest(params)
-	if err != nil {
-		return
-	}
-	if prs.Payload.Status == "accepted" {
-		accepted = true
-		pubKey = prs.Payload.AcceptedCryptoKey
-	}
-	return
-}
+// func getAcceptance(params *pairing_request.GetPairingRequestParams) (accepted bool, pubKey string, err error) {
+// 	// prs, err := polyrhythmAPI.PairingRequest.GetPairingRequest(params)
+// 	if err != nil {
+// 		return
+// 	}
+// 	if prs.Payload.Status == "accepted" {
+// 		accepted = true
+// 		pubKey = prs.Payload.AcceptedCryptoKey
+// 	}
+// 	return
+// }

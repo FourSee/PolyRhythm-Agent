@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	apiclient "github.com/foursee/swagger-go/client"
+	openapiGo "github.com/foursee/openapiGo"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -17,7 +17,7 @@ var (
 	onStartNotification = run.Flag("onStartNotification", "Send a notifcation on start").Bool()
 	command             = run.Arg("Command", "").Required().String()
 	commandArgs         = run.Arg("Args", "").Strings()
-	polyrhythmAPI       = *apiclient.Default
+	polyrhythmAPI       = openapiGo.NewAPIClient(openapiGo.NewConfiguration())
 )
 
 func main() {

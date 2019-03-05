@@ -19,14 +19,14 @@ var configInstance = readConfig()
 // Config is the global configuration structure
 type Config struct {
 	PairedDevice struct {
-		PublicKey string `yaml:"PublicKey"`
-		ID        string `yaml:"ID"`
-	} `yaml:"PairedDevice"`
+		PublicKey string `yaml:"PublicKey,omitempty"`
+		ID        string `yaml:"ID,omitempty"`
+	} `yaml:"PairedDevice,omitempty"`
 	DeviceIdentity struct {
 		PublicKey  string `yaml:"PublicKey"`
 		PrivateKey string `yaml:"PrivateKey"`
-		ID         string `yaml:"ID"`
-	} `yaml:"DeviceIdentity"`
+		APIkey     string `yaml:"ApiKey,omitempty"`
+	} `yaml:"DeviceIdentity,omitempty"`
 }
 
 func config() *Config {
