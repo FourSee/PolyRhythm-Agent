@@ -34,7 +34,6 @@ func newPairingRequest() {
 	check(err)
 	config().PairedDevice.PublicKey = pairedDeviceKey
 	config().save()
-	return
 }
 
 func waitForAcceptance(requestID string) (pubKey string, err error) {
@@ -45,7 +44,7 @@ func waitForAcceptance(requestID string) (pubKey string, err error) {
 	// params.SetTimeout(10 * time.Second)
 	startedAt := time.Now()
 	for {
-		timeDiff := time.Now().Sub(startedAt)
+		timeDiff := time.Since(startedAt)
 		time.Sleep(10 * time.Second)
 		if timeDiff > 60*time.Second {
 			return "", errors.New("Timed out waiting for pairing acceptance")

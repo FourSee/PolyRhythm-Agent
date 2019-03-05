@@ -16,11 +16,7 @@ func askForConfirmation() bool {
 		return false
 	}
 	okayResponses := []string{"YES"}
-	// nokayResponses := []string{"n", "N", "no", "No", "NO"}
-	if containsString(okayResponses, response) {
-		return true
-	}
-	return false
+	return containsString(okayResponses, response)
 }
 
 // You might want to put the following two functions in a separate utility package.
